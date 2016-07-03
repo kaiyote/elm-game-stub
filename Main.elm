@@ -101,25 +101,34 @@ type Msg
   | KeyDown KeyCode
   | KeyUp KeyCode
   | Restart
-  | Score
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     Update dt ->
-      { model
-        | hero = model.hero
-          |> gravity dt
-          |> jump
-          |> walk
-          |> physics model.dead dt
-        , enemies = model.enemies
-          |> map (gPhysics dt)
-          |> filter onScreen
-          |> filter (collisionB model.hero)
-        , dead = model.dead || collisionA model }
-      ! []
+      let
+        origCount =
+          length model.enemies
+
+        newHero =
+          model.hero
+            |> gravity dt
+            |> jump
+            |> walk
+            |> physics model.dead dt
+
+        newEnemiesList =
+          model.enemies
+            |> map (gPhysics dt)
+            |> filter onScreen
+            |> filter (collisionB model.hero)
+      in
+        { model
+          | hero = newHero
+          , enemies = newEnemiesList
+          , dead = model.dead || collisionA model
+          , score = model.score + origCount - (length newEnemiesList) } ! []
 
     Tick _ ->
       model ! [ generate EnemyMsg possibleDirection ]
@@ -142,9 +151,6 @@ update msg model =
 
         Just dir ->
           { model | enemies = (enemy dir) :: model.enemies } ! []
-
-    Score ->
-      { model | score = model.score + 1 } ! []
 
     Restart ->
       { model
