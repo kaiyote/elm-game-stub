@@ -121,14 +121,19 @@ update msg model =
         newEnemiesList =
           model.enemies
             |> map (gPhysics dt)
-            |> filter onScreen
             |> filter (collisionB model.hero)
+
+        score =
+          origCount - length newEnemiesList
+
+        finalEnemiesList =
+          filter onScreen newEnemiesList
       in
         { model
           | hero = newHero
-          , enemies = newEnemiesList
+          , enemies = finalEnemiesList
           , dead = model.dead || collisionA model
-          , score = model.score + origCount - (length newEnemiesList) } ! []
+          , score = model.score + score } ! []
 
     Tick _ ->
       model ! [ generate EnemyMsg possibleDirection ]
