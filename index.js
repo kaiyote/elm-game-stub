@@ -1,3 +1,3 @@
 document.addEventListener('DOMContentLoaded', () => {
-  Elm.Main.embed(document.getElementById('content'))
+  let app = Elm.Main.embed(document.getElementById('content'))
 })
