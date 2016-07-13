@@ -35,7 +35,7 @@ update msg model =
         newEnemiesList =
           model.enemies
             |> map (gPhysics dt)
-            |> filter (collisionB model.hero)
+            |> filter (enemiesHeroMissed model.hero)
 
         score =
           origCount - length newEnemiesList
@@ -46,7 +46,7 @@ update msg model =
         { model
           | hero = newHero
           , enemies = finalEnemiesList
-          , dead = model.dead || collisionA model
+          , dead = model.dead || enemiesTouchingHero model
           , score = model.score + score } ! []
 
     Tick _ ->
@@ -144,8 +144,8 @@ physics dead dt hero =
     }
 
 
-collisionA : Model -> Bool
-collisionA model =
+enemiesTouchingHero : Model -> Bool
+enemiesTouchingHero model =
   0 /= (model.enemies
           |> filter (killsHero model.hero)
           |> length)
@@ -157,8 +157,8 @@ killsHero hero enemy =
     hero.y < 25 && hero.vy >= 0
 
 
-collisionB : Hero -> Enemy -> Bool
-collisionB hero enemy =
+enemiesHeroMissed : Hero -> Enemy -> Bool
+enemiesHeroMissed hero enemy =
   not (hero.x < enemy.x + 20 && hero.x + 20 > enemy.x &&
     hero.y < 25 && hero.vy < 0)
 
