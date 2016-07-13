@@ -1,0 +1,23 @@
+{
+  "name": "elm-game-stub",
+  "version": "1.0.0",
+  "description": "no helpful description here",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "elm-live": "^2.4.1"
+  },
+  "scripts": {
+    "start": "elm-live Main.elm --output=elm.js --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaiyote/elm-game-stub.git"
+  },
+  "author": "Tim Huddle <blazhen88@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kaiyote/elm-game-stub/issues"
+  },
+  "homepage": "https://github.com/kaiyote/elm-game-stub#readme"
+}
