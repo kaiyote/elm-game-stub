@@ -1,14 +1,14 @@
-module View exposing (view)
+module EnemySmash.View exposing (view)
 
-import Model exposing (Size, Model, Enemy)
+import EnemySmash.Model exposing (Size, Model, Enemy, size)
 import Html exposing (Html)
 import Svg exposing (Svg, svg, rect, text, text')
 import Svg.Attributes exposing (height, width, x, y, fill)
 import List exposing (map)
 
 
-view : Size -> Model -> Html msg
-view size model =
+view : Model -> Html msg
+view model =
   let
     (w, h) =
       (toFloat size.width, toFloat size.height)

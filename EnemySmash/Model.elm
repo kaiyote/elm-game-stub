@@ -1,4 +1,4 @@
-module Model exposing (..)
+module EnemySmash.Model exposing (..)
 
 
 type alias Size =
@@ -60,8 +60,3 @@ enemy dir =
         Left -> 820
   in
     Enemy x' dir
-
-
-init : ( Model, Cmd msg )
-init =
-  model ! []

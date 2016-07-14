@@ -1,11 +1,12 @@
-module Update exposing (Msg(..), update)
+module EnemySmash.Update exposing (Msg, update, subscriptions)
 
-import Model exposing (..)
+import EnemySmash.Model exposing (Direction(Right, Left), Model, Enemy, Hero, hero, enemy)
 import Key exposing (..)
 import List exposing (length, map, filter)
 import Random exposing (Generator, bool, generate, int)
 import Keyboard exposing (KeyCode)
 import Time exposing (Time)
+import AnimationFrame as AF
 
 
 type Msg
@@ -15,6 +16,16 @@ type Msg
   | KeyDown KeyCode
   | KeyUp KeyCode
   | Restart
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub.batch
+    [ AF.diffs Update
+    , Time.every Time.second Tick
+    , Keyboard.downs KeyDown
+    , Keyboard.ups KeyUp
+    ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
