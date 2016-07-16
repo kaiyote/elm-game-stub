@@ -1,9 +1,9 @@
-module EnemySmash.Main exposing (main)
+module Rogueish.Main exposing (main)
 
 import Html.App as Html
-import EnemySmash.Model exposing (Model, model)
-import EnemySmash.View exposing (view)
-import EnemySmash.Update exposing (Msg, update, subscriptions)
+import Rogueish.Model exposing (Model, model)
+import Rogueish.View exposing (view)
+import Rogueish.Update exposing (Msg, update, subscriptions)
 
 
 main : Program Never

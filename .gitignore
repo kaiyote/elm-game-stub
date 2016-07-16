@@ -2,3 +2,4 @@ elm-stuff
 *.sublime-workspace
 elm.js
 node_modules
+*.log
