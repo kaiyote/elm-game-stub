@@ -27,13 +27,13 @@ neighborhood2 (x, y) =
 getNeighborsOrDefault : a -> Coord -> Grid a -> List a
 getNeighborsOrDefault default (x, y) grid =
   neighborhood (x, y)
-    |> List.map (\c -> Maybe.withDefault default <| M.get x y grid)
+    |> List.map (\(x', y') -> Maybe.withDefault default <| M.get x' y' grid)
 
 
 getNeighborsOrDefault2 : a -> Coord -> Grid a -> List a
 getNeighborsOrDefault2 default (x, y) grid =
   neighborhood2 (x, y)
-    |> List.map (\c -> Maybe.withDefault default <| M.get x y grid)
+    |> List.map (\(x', y') -> Maybe.withDefault default <| M.get x' y' grid)
 
 
 getNeighbors : Coord -> Grid Tile -> List Tile
@@ -81,7 +81,7 @@ iterate grid =
   M.toIndexedArray grid
     |> A.map fst
     |> A.toList
-    |> List.map (\coord -> (coord, if numberOfWalls coord grid >= 5 then Wall else Floor))
+    |> List.map (\coord -> (coord, if (numberOfWalls coord grid) >= 5 then Wall else Floor))
     |> List.foldl (\((x, y), a) grid -> M.set x y a grid) grid
 
 
@@ -100,4 +100,4 @@ randomCave size seed =
     (bedrock, seed') =
       randomMap size seed
   in
-    ( bedrock |> iterate2 |> iterate2 |> iterate2 |> iterate2 |> iterate |> iterate |> iterate, seed')
+    ( bedrock |> iterate2 |> iterate |> iterate |> iterate |> iterate, seed')

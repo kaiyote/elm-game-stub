@@ -3,7 +3,9 @@ module Rogueish.Main exposing (main)
 import Html.App as Html
 import Rogueish.Model exposing (Model, model)
 import Rogueish.View exposing (view)
-import Rogueish.Update exposing (Msg, update, subscriptions)
+import Rogueish.Update exposing (Msg(..), update, subscriptions)
+import Task
+import Time as T
 
 
 main : Program Never
@@ -18,4 +20,4 @@ main =
 
 init : ( Model, Cmd Msg )
 init =
-  model ! []
+  model ! [ Task.perform (\_ -> NewSeed 0) (\t -> NewSeed <| round t) T.now ]
