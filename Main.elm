@@ -34,9 +34,16 @@ main =
     }
 
 
-init : ( Model, Cmd msg )
+init : ( Model, Cmd Msg )
 init =
-  Model None ESModel.model RModel.model ! []
+  let
+    (esModel, esCommands) =
+      ESModel.init
+
+    (rModel, rCommands) =
+      RModel.init
+  in
+    Model None esModel rModel ! [ Cmd.map ESMsg esCommands, Cmd.map RMsg rCommands]
 
 
 -- SUBSCRIPTIONS
@@ -61,18 +68,23 @@ subscriptions model =
 
 type Msg
   = Activate ActiveGame
-  | ESMsg ESUpdate.Msg
-  | RMsg RUpdate.Msg
+  | ESMsg ESModel.Msg
+  | RMsg RModel.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     Activate game ->
-      { model
-      | active = game
-      , smashModel = ESModel.model
-      } ! []
+      let
+        (rModel, rCommands) =
+          RModel.init
+      in
+        { model
+        | active = game
+        , smashModel = ESModel.model
+        , rogueModel = rModel
+        } ! [ Cmd.map RMsg rCommands ]
 
     ESMsg msg ->
       let
@@ -87,7 +99,6 @@ update msg model =
           RUpdate.update msg model.rogueModel
       in
         { model | rogueModel = newModel } ! [ Cmd.map RMsg cmds ]
-
 
 
 -- VIEW

@@ -1,7 +1,7 @@
 module EnemySmash.Main exposing (main)
 
 import Html.App as Html
-import EnemySmash.Model exposing (Model, model)
+import EnemySmash.Model exposing (init)
 import EnemySmash.View exposing (view)
 import EnemySmash.Update exposing (Msg, update, subscriptions)
 
@@ -14,8 +14,3 @@ main =
     , update = update
     , subscriptions = subscriptions
     }
-
-
-init : ( Model, Cmd Msg )
-init =
-  model ! []

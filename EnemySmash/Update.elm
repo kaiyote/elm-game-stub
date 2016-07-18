@@ -1,21 +1,12 @@
-module EnemySmash.Update exposing (Msg, update, subscriptions)
+module EnemySmash.Update exposing (update, subscriptions)
 
-import EnemySmash.Model exposing (Direction(Right, Left), Model, Enemy, Hero, hero, enemy)
+import EnemySmash.Model exposing (Direction(Right, Left), Msg(..), Model, Enemy, Hero, hero, enemy)
 import Key exposing (..)
 import List exposing (length, map, filter)
 import Random exposing (Generator, bool, generate, int)
 import Keyboard exposing (KeyCode)
 import Time exposing (Time)
 import AnimationFrame as AF
-
-
-type Msg
-  = Update Time
-  | Tick Time
-  | EnemyMsg (Maybe Direction)
-  | KeyDown KeyCode
-  | KeyUp KeyCode
-  | Restart
 
 
 subscriptions : Model -> Sub Msg

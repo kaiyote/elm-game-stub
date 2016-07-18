@@ -1,5 +1,8 @@
 module EnemySmash.Model exposing (..)
 
+import Keyboard exposing (KeyCode)
+import Time exposing (Time)
+
 
 type alias Size =
   { width : Int
@@ -36,6 +39,15 @@ type Direction
   | Left
 
 
+type Msg
+  = Update Time
+  | Tick Time
+  | EnemyMsg (Maybe Direction)
+  | KeyDown KeyCode
+  | KeyUp KeyCode
+  | Restart
+
+
 size : Size
 size =
   Size 800 600
@@ -60,3 +72,8 @@ enemy dir =
         Left -> 820
   in
     Enemy x' dir
+
+
+init : ( Model, Cmd Msg )
+init =
+  model ! []

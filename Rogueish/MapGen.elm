@@ -2,60 +2,31 @@ module Rogueish.MapGen exposing (..)
 
 import Array as A
 import Matrix as M
+import Matrix.Extra as ME
 import Rogueish.Model exposing (..)
 import Random as R exposing (Generator, Seed)
 
 
-neighborhood : Coord -> List Coord
-neighborhood (x, y) =
-  [ (x - 1, y - 1), (x, y - 1), (x + 1, y - 1)
-  , (x - 1, y), (x, y), (x + 1, y)
-  , (x - 1, y + 1), (x, y + 1), (x + 1, y + 1)
-  ]
-
-
-neighborhood2 : Coord -> List Coord
-neighborhood2 (x, y) =
-  [ (x - 2, y - 2), (x - 1, y - 2), (x, y - 2), (x + 1, y - 2), (x + 2, y - 2)
-  , (x - 2, y - 1), (x - 1, y - 1), (x, y - 1), (x + 1, y - 1), (x + 2, y - 1)
-  , (x - 2, y), (x - 1, y), (x, y), (x + 1, y), (x + 2, y)
-  , (x - 2, y + 1), (x - 1, y + 1), (x, y + 1), (x + 1, y + 1), (x + 2, y + 1)
-  , (x - 2, y + 2), (x - 1, y + 2), (x, y + 2), (x + 1, y + 2), (x + 2, y + 2)
-  ]
-
-
-getNeighborsOrDefault : a -> Coord -> Grid a -> List a
-getNeighborsOrDefault default (x, y) grid =
-  neighborhood (x, y)
-    |> List.map (\(x', y') -> Maybe.withDefault default <| M.get x' y' grid)
-
-
-getNeighborsOrDefault2 : a -> Coord -> Grid a -> List a
-getNeighborsOrDefault2 default (x, y) grid =
-  neighborhood2 (x, y)
-    |> List.map (\(x', y') -> Maybe.withDefault default <| M.get x' y' grid)
-
-
 getNeighbors : Coord -> Grid Tile -> List Tile
-getNeighbors =
-  getNeighborsOrDefault Wall
+getNeighbors (x, y) grid =
+  let
+    neighbors =
+      ME.neighbours x y grid
 
+    point =
+      Maybe.withDefault Wall <| M.get x y grid
+  in
+    case List.length neighbors of
+      8 ->
+        point :: neighbors
 
-getNeighbors2 : Coord -> Grid Tile -> List Tile
-getNeighbors2 =
-  getNeighborsOrDefault2 Wall
+      _ ->
+        point :: (neighbors ++ List.repeat (8 - (List.length neighbors)) Wall)
 
 
 numberOfWalls : Coord -> Grid Tile -> Int
 numberOfWalls coord grid =
   getNeighbors coord grid
-    |> List.filter (\t -> t == Wall)
-    |> List.length
-
-
-numberOfWalls2 : Coord -> Grid Tile -> Int
-numberOfWalls2 coord grid =
-  getNeighbors2 coord grid
     |> List.filter (\t -> t == Wall)
     |> List.length
 
