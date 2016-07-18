@@ -4,6 +4,7 @@ import Rogueish.Model exposing (Model, Msg(..))
 import Rogueish.MapGen as RMG
 import Random as R
 import String as S
+import Task as T
 
 
 subscriptions : Model -> Sub Msg
@@ -13,28 +14,9 @@ subscriptions model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  case Debug.log "msg" msg of
-    NoOp ->
-      model ! []
-
+  case msg of
     NewSeed f ->
-      { model | seed = R.initialSeed f } ! []
-
-    Generate ->
-      let
-        (level, seed') =
-          RMG.randomMap (50, 35) model.seed
-      in
-        { model
-        | level = level
-        , seed = seed'
-        } ! []
-
-    Iterate ->
-      { model | level = RMG.iterate model.level } ! []
-
-    Iterate2 ->
-      { model | level = RMG.iterate2 model.level } ! []
+      { model | seed = R.initialSeed f } ! [ T.perform (\_ -> Cave) (\_ -> Cave) <| T.succeed 0 ]
 
     Cave ->
       let

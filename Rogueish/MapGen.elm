@@ -36,6 +36,11 @@ randomTile =
   R.map (\f -> if f < 0.4 then Wall else Floor) (R.float 0 1)
 
 
+randomCoord : Grid a -> Generator Coord
+randomCoord grid =
+  R.pair (R.int 0 <| M.width grid) (R.int 0 <| M.height grid)
+
+
 randomMap : Size -> Seed -> ( Grid Tile, Seed )
 randomMap (w, h) seed =
   let
