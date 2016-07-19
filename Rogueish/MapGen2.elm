@@ -3,6 +3,8 @@ module Rogueish.MapGen2 exposing (..)
 
 import Random as R exposing (Seed)
 import Set as S exposing (Set)
+import Random.Array as RA
+import Array as A
 
 
 type alias GridID = (Int, Int)
@@ -61,3 +63,36 @@ genRoom rows cols colWidth rowHeight seed (c, r) =
   in
     Room S.empty ((xStart, yStart), (xEnd, yEnd)) (c, r)
       |> genConns rows cols seed''''
+
+
+genConns : Int -> Int -> Seed -> Room -> (Room, Seed)
+genConns rows cols seed room =
+  let
+    adjs =
+      adjRooms rows cols room.id
+
+    (numConns, seed') =
+      R.step (R.int 1 (List.length adjs)) seed
+
+    (roomShuffle, seed'') =
+      R.step (RA.shuffle (A.fromList adjs)) seed'
+  in
+    ({ room | rConns = S.fromList <| List.take numConns roomShuffle }, seed'')
+
+
+adjRooms : Int -> Int -> GridID -> List GridID
+adjRooms rows cols (x, y) =
+  let
+    diffOne (x', y') =
+      abs (x' - x) + abs (y' - y) == 1
+  in
+    neighbors rows cols (x, y)
+      |> List.filter diffOne
+
+
+neighbors : Int -> Int -> GridID -> List GridID
+neighbors rows cols (x, y) =
+  [ (x - 1, y - 1), (x, y - 1), (x + 1, y - 1)
+  , (x - 1, y), (x + 1, y)
+  , (x - 1, y + 1), (x, y + 1), (x + 1, y + 1)
+  ] |> List.filter (\(x', y') -> x' >= 0 && x' < cols && y' >= 0 && y' < rows)
