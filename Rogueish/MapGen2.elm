@@ -5,6 +5,7 @@ import Random as R exposing (Seed)
 import Set as S exposing (Set)
 import Random.Array as RA
 import Array as A
+import List.Extra as LE
 
 
 type alias GridID = (Int, Int)
@@ -29,7 +30,7 @@ minHeight = 6
 minWidth = 6
 
 
-genLevel : Int -> Int -> Int -> Int -> Seed -> String
+genLevel : Int -> Int -> Int -> Int -> Seed -> List GridID
 genLevel rows cols maxWidth maxHeight seed =
   let
     colWidth =
@@ -39,8 +40,8 @@ genLevel rows cols maxWidth maxHeight seed =
       maxHeight // rows
   in
     List.concatMap (\a -> List.map (\b -> (a, b)) [0..cols - 1]) [0..rows - 1]
-      |> List.scanl (\gridid (room, seed') -> genRoom rows cols colWidth rowHeight seed' gridid)
-      |> digRooms maxWidth maxHeight
+      |> LE.scanl1 (\gridid (room, seed') -> genRoom rows cols colWidth rowHeight seed' gridid)
+      --|> digRooms maxWidth maxHeight
 
 
 genRoom : Int -> Int -> Int -> Int -> Seed -> GridID -> (Room, Seed)
@@ -50,16 +51,16 @@ genRoom rows cols colWidth rowHeight seed (c, r) =
       (c * colWidth, r * rowHeight)
 
     (xStart, seed') =
-      R.step (R.int (minX + 1) (minX + coldWidth - 7)) seed
+      R.step (R.int (minX + 1) (minX + colWidth - 7)) seed
 
     (yStart, seed'') =
-      R.step (R.int ) seed'
+      R.step (R.int (minY + 1) (minY + rowHeight - 7)) seed'
 
     (xEnd, seed''') =
-      R.step (R.int ) seed''
+      R.step (R.int (xStart + minWidth) (minX + colWidth - 1)) seed''
 
     (yEnd, seed'''') =
-      R.step (R.int ) seed'''
+      R.step (R.int (yStart + minHeight) (minY + rowHeight - 1)) seed'''
   in
     Room S.empty ((xStart, yStart), (xEnd, yEnd)) (c, r)
       |> genConns rows cols seed''''
@@ -77,7 +78,7 @@ genConns rows cols seed room =
     (roomShuffle, seed'') =
       R.step (RA.shuffle (A.fromList adjs)) seed'
   in
-    ({ room | rConns = S.fromList <| List.take numConns roomShuffle }, seed'')
+    ({ room | connections = S.fromList <| List.take numConns <| A.toList roomShuffle }, seed'')
 
 
 adjRooms : Int -> Int -> GridID -> List GridID
