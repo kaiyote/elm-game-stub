@@ -35,6 +35,7 @@ type Tile
   | Wall
   | Hero
   | Enemy
+  | Empty
 
 
 type Msg

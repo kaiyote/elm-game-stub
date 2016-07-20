@@ -21,3 +21,4 @@ convertTileToChar tile =
     Floor -> '.'
     Hero -> '@'
     Enemy -> 's'
+    Empty -> ' '

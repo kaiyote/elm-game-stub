@@ -1,7 +1,7 @@
 module Rogueish.Update exposing (update, subscriptions)
 
 import Rogueish.Model exposing (Model, Msg(..))
-import Rogueish.MapGen as RMG
+import Rogueish.MapGen2 as RMG
 import Random as R
 import String as S
 import Task as T
@@ -20,10 +20,9 @@ update msg model =
 
     Cave ->
       let
-        (level, seed') =
-          RMG.randomCave (50, 35) model.seed
+        level =
+          RMG.genLevel 10 20 30 50 model.seed
       in
         { model
         | level = level
-        , seed = seed'
         } ! []

@@ -8,6 +8,7 @@
     ],
     "exposed-modules": [],
     "dependencies": {
+        "Fresheyeball/elm-guards": "1.0.0 <= v < 2.0.0",
         "eeue56/elm-flat-matrix": "3.0.0 <= v < 4.0.0",
         "elm-community/list-extra": "3.0.0 <= v < 4.0.0",
         "elm-community/random-extra": "1.0.0 <= v < 2.0.0",
