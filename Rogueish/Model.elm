@@ -1,9 +1,10 @@
 module Rogueish.Model exposing (..)
 
-import Matrix as M
 import Random as R exposing (Seed)
-import Task
+import Matrix as M exposing (Matrix)
 import Time as T
+import Set exposing (Set)
+import Task
 
 
 type alias Coord = (Int, Int)
@@ -12,7 +13,17 @@ type alias Coord = (Int, Int)
 type alias Size = (Int, Int)
 
 
-type alias Grid a = M.Matrix a
+type alias RoomID = Int
+
+
+type alias Grid a = Matrix a
+
+
+type alias Room =
+  { origin : Coord
+  , connections : Set RoomID
+  , size : Size
+  }
 
 
 type alias Model =

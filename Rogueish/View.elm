@@ -10,7 +10,8 @@ import Matrix.Extra as ME
 view : Model -> Html Msg
 view model =
   div []
-    [ M.map convertTileToChar model.level |> ME.prettyPrint
+    [ button [ onClick Cave ] [ text "Create Level"]
+    , M.map convertTileToChar model.level |> ME.prettyPrint
     ]
 
 

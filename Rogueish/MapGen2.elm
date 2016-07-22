@@ -56,7 +56,6 @@ genLevel rows cols maxWidth maxHeight seed =
       |> List.tail
       |> Maybe.withDefault []
       |> digRooms maxWidth maxHeight
-      |> Debug.log "string"
       |> String.lines
       |> List.map String.toList
       |> LE.init
