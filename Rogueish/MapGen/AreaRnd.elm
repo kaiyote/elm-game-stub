@@ -92,9 +92,9 @@ randomConnection (nx, ny) =
   RE.choice True False
     `R.andThen` (\rb ->
       if rb || ny <= 1 then
-        R.map (\rx ry -> ((rx, ry), (rx + 1, ry))) (R.int 0 (nx - 2)) (R.int 0 (ny - 1))
+        R.map (\(rx, ry) -> ((rx, ry), (rx + 1, ry))) (R.pair (R.int 0 (nx - 2)) (R.int 0 (ny - 1)))
       else
-        R.map (\rx ry -> ((rx, ry), (rx, ry + 1))) (R.int 0 (nx - 1)) (R.int 0 (ny - 2))
+        R.map (\(rx, ry) -> ((rx, ry), (rx, ry + 1))) (R.pair (R.int 0 (nx - 1)) (R.int 0 (ny - 2)))
     )
 
 
@@ -117,7 +117,7 @@ makeCorridor hv (x0, y0) (x1, y1) b =
     )
 
 
-{-connectPlaces : (Area, Area) -> (Area, Area) -> Generator Corridor
+connectPlaces : (Area, Area) -> (Area, Area) -> Generator Corridor
 connectPlaces (sa, so) (ta, to) =
   let
     (_, _, sx1, sy1) =
@@ -135,7 +135,7 @@ connectPlaces (sa, so) (ta, to) =
     trim area =
       let
         (x0, y0, x1, y1) =
-          fromArea area
+          A.fromArea area
 
         trim (v0, v1) =
           if v1 - v0 < 6 then (v0, v1)
@@ -148,10 +148,55 @@ connectPlaces (sa, so) (ta, to) =
         (ny0, ny1) =
           trim (y0, y1)
       in
-        toArea (nx0, ny0, nx1, ny1)
+        A.toArea (nx0, ny0, nx1, ny1)
           |> Maybe.withDefault ((0, 0), (0, 0))
   in
-    xyInArea <| trim so
-      `R.andThen` (\sx sy ->
+    (xyInArea <| trim so)
+      `R.andThen` (\(sx, sy) ->
+        (xyInArea <| trim to)
+          `R.andThen` (\(tx, ty) ->
+            let
+              hva sarea tarea =
+                let
+                  (_, _, zsx1, zsy1) =
+                    A.fromArea sarea
 
-      )-}
+                  (ztx0, zty0, _, _) =
+                    A.fromArea tarea
+
+                  xa =
+                    (zsx1 + 2, min sy ty, ztx0 - 2, max sy ty)
+
+                  ya =
+                    (min sx tx, zsy1 + 2, max sx tx, zty0 - 2)
+
+                  xya =
+                    (zsx1 + 2, zsy1 + 2, ztx0 - 2, zty0 - 2)
+                in
+                  case A.toArea xya of
+                    Just xyarea -> R.map (\hv -> (hv, Just xyarea)) (RE.choice Horiz Vert)
+                    Nothing ->
+                      case A.toArea xa of
+                        Just xarea -> RE.constant (Horiz, Just xarea)
+                        Nothing -> RE.constant (Vert, A.toArea ya)
+            in
+              hva so to
+                `R.andThen` (\(hvOuter, areaOuter) ->
+                  case areaOuter of
+                    Just arenaOuter -> RE.constant (hvOuter, arenaOuter)
+                    Nothing ->
+                      hva sa ta
+                        `R.andThen` (\(hvInner, aInner) ->
+                          RE.constant (hvInner, Maybe.withDefault ((0, 0), (0, 0)) aInner)
+                        )
+                ) `R.andThen` (\(hv, area) ->
+                  let
+                    (p0, p1) =
+                      case hv of
+                        Horiz -> ((sox1, sy), (tox0, ty))
+                        Vert -> ((sx, soy1), (tx, toy0))
+                  in
+                    makeCorridor hv p0 p1 area
+                )
+          )
+      )
